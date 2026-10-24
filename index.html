@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="SchearLoe 的个人主页 — 全栈开发者，从桌面端到云端。">
+<meta name="description" content="SchearLoe 的个人主页 — 网络流量方向的全栈开发者，也写 Swift 与 AI Agent。">
 <title>SchearLoe · 个人主页</title>
 <link rel="icon" type="image/jpeg" href="avatar.png">
 <style>
@@ -156,6 +156,46 @@
   .project p { color: var(--text-dim); font-size: .9rem; margin-bottom: 18px; }
   .tech-row { display: flex; flex-wrap: wrap; gap: 7px; }
   .tech { font-family: var(--mono); font-size: .72rem; padding: 3px 10px; border-radius: 6px; color: var(--accent-3); background: rgba(34, 211, 238, .08); border: 1px solid rgba(34, 211, 238, .18); }
+  .lock {
+    font-family: var(--mono); font-size: .7rem; font-weight: 600; padding: 3px 10px; border-radius: 6px;
+    color: #fbbf24; background: rgba(251, 191, 36, .08); border: 1px solid rgba(251, 191, 36, .28); margin-left: auto;
+  }
+  .lock.public { color: #34d399; background: rgba(52, 211, 153, .08); border-color: rgba(52, 211, 153, .3); }
+  .project.static { cursor: default; }
+
+  /* ---------- 最近在忙 ---------- */
+  .now-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+  .now-card {
+    background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 22px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: transform .25s, border-color .25s;
+  }
+  .now-card:hover { transform: translateY(-4px); border-color: rgba(34, 211, 238, .4); }
+  .now-card .n-icon { font-size: 1.5rem; margin-bottom: 10px; display: block; }
+  .now-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .now-card p { color: var(--text-dim); font-size: .84rem; }
+
+  /* ---------- 折叠区 ---------- */
+  .folding { margin-top: 26px; }
+  .folding summary {
+    list-style: none; cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px;
+    padding: 16px 22px; color: var(--text-dim); font-size: .95rem;
+    transition: border-color .25s, color .25s;
+  }
+  .folding summary::-webkit-details-marker { display: none; }
+  .folding summary:hover { border-color: rgba(168, 85, 247, .45); color: var(--text); }
+  .folding summary .chev { transition: transform .3s; font-size: .75rem; }
+  .folding[open] summary .chev { transform: rotate(90deg); }
+  .fold-body { padding: 12px 2px 0; display: grid; gap: 10px; }
+  .fold-row {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 20px;
+  }
+  .fold-row a { color: var(--text); text-decoration: none; font-weight: 700; border-bottom: 1px dashed rgba(255, 255, 255, .25); }
+  .fold-row a:hover { color: #c7d2fe; border-bottom-color: #c7d2fe; }
+  .fold-row .desc { color: var(--text-dim); font-size: .88rem; }
 
   /* ---------- 页脚 ---------- */
   footer {
@@ -196,6 +236,7 @@
   <a class="logo" href="#">SchearLoe</a>
   <div class="nav-links">
     <a href="#about">关于</a>
+    <a href="#now">近况</a>
     <a href="#projects">项目</a>
     <a href="https://github.com/SchearLoe" target="_blank" rel="noopener">GitHub</a>
   </div>
@@ -209,10 +250,10 @@
   <h1 class="name">SchearLoe</h1>
   <div class="typing-line">我是 <span class="typed" id="typed"></span><span class="cursor"></span></div>
   <div class="hero-badges">
-    <span class="badge">⌨️ TypeScript 全栈</span>
-    <span class="badge">🖥️ 桌面端 × 云端</span>
-    <span class="badge">🧩 爱造轮子</span>
-    <span class="badge">🌙 深夜写代码型选手</span>
+    <span class="badge">🛰️ 网络流量 × 安全</span>
+    <span class="badge">⌨️ TypeScript / Swift / Java / Python</span>
+    <span class="badge">🤖 AI Agent 探索</span>
+    <span class="badge">🫧 毛玻璃美学爱好者</span>
   </div>
   <div class="hero-cta">
     <a class="btn btn-primary" href="#projects">看看我的项目 →</a>
@@ -232,29 +273,64 @@
     </div>
     <div class="about-grid">
       <div class="card about-text reveal">
-        <p><strong>你好，我是 SchearLoe。</strong>一名喜欢把想法做成完整产品的全栈开发者，从 Electron 桌面端到 NestJS 云端服务，从前端交互到数据库设计都乐在其中。</p>
-        <p>最近在写一个<strong>文具店收银系统（POS）</strong>和一个<strong>液态毛玻璃风格的任务管理工具</strong>；也在折腾 GoBGP 控制台这类"不太一样"的东西。</p>
-        <p>我相信好看的界面和可靠的工程可以兼得——<strong>代码要能跑，界面要能打。</strong></p>
+        <p><strong>你好，我是 SchearLoe。</strong>主业在<strong>网络与流量安全</strong>方向：做过 GoBGP 的 Web 管理控制台、NetFlow 流量生成与采集测试系统，也在给异常流量分析系统造 AI 巡检助手。</p>
+        <p>下班后接着造：<strong>slpm</strong>（液态毛玻璃任务管理）是我的主力公开项目；还给 Apple Watch 写了压力管理 App，给家里搭了"相册 + 留言板 + AI 助手"的家庭网站。</p>
+        <p>一个小执念：<strong>东西要做完整</strong>——部署指南、使用手册、架构文档、E2E 测试，一个都不能少。</p>
       </div>
       <div class="card reveal">
         <div class="skill-group">
           <div class="skill-label">FRONTEND</div>
           <div class="chips">
-            <span class="chip">Vue 3</span><span class="chip">Electron</span><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Vite</span>
+            <span class="chip">Vue 3</span><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Electron</span><span class="chip">Vite</span>
           </div>
         </div>
         <div class="skill-group">
           <div class="skill-label">BACKEND</div>
           <div class="chips">
-            <span class="chip">NestJS</span><span class="chip">Node.js</span><span class="chip">Java</span><span class="chip">PostgreSQL</span><span class="chip">Prisma</span>
+            <span class="chip">Spring Boot</span><span class="chip">gRPC</span><span class="chip">NestJS</span><span class="chip">FastAPI</span><span class="chip">Node.js</span>
           </div>
         </div>
         <div class="skill-group">
-          <div class="skill-label">TOOLS</div>
+          <div class="skill-label">APPLE & AI</div>
           <div class="chips">
-            <span class="chip">Playwright</span><span class="chip">pnpm</span><span class="chip">Git</span><span class="chip">Docker</span>
+            <span class="chip">Swift</span><span class="chip">watchOS</span><span class="chip">HealthKit</span><span class="chip">RAG</span><span class="chip">Ollama</span>
           </div>
         </div>
+        <div class="skill-group">
+          <div class="skill-label">DATA & OPS</div>
+          <div class="chips">
+            <span class="chip">PostgreSQL</span><span class="chip">SQLite</span><span class="chip">Prometheus</span><span class="chip">Playwright</span><span class="chip">Docker</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="now">
+    <div class="reveal">
+      <div class="section-tag">// NOW</div>
+      <h2 class="section-title">最近在<span class="hl">忙</span></h2>
+    </div>
+    <div class="now-grid">
+      <div class="now-card reveal">
+        <span class="n-icon">🛰️</span>
+        <h3>网络与流量分析</h3>
+        <p>BGP 控制台、NetFlow 流量生成、采集链路测试。</p>
+      </div>
+      <div class="now-card reveal">
+        <span class="n-icon">🤖</span>
+        <h3>AI Agent 落地</h3>
+        <p>ReAct 智能体 + RAG，给运维巡检做产品化验证。</p>
+      </div>
+      <div class="now-card reveal">
+        <span class="n-icon">🍎</span>
+        <h3>iOS 健康应用</h3>
+        <p>基于 Apple Watch 数据的压力管理，持续迭代中。</p>
+      </div>
+      <div class="now-card reveal">
+        <span class="n-icon">🏠</span>
+        <h3>家庭自托管</h3>
+        <p>家庭服务器上的相册、留言板和 AI 助手。</p>
       </div>
     </div>
   </section>
@@ -265,31 +341,52 @@
       <h2 class="section-title">精选<span class="hl">项目</span></h2>
     </div>
     <div class="projects-grid">
-      <a class="project reveal" href="https://github.com/SchearLoe/stationery-pos" target="_blank" rel="noopener">
-        <span class="icon">🧾</span>
-        <h3>stationery-pos <span class="arrow">→</span></h3>
-        <p>小型文具店收银系统（POS）：Electron + Vue3 桌面收银端，NestJS + PostgreSQL 云端。进销存、交接班、经营报表、采购应付、会员储值积分、账目月结，一应俱全。</p>
-        <div class="tech-row">
-          <span class="tech">Electron</span><span class="tech">Vue 3</span><span class="tech">NestJS</span><span class="tech">PostgreSQL</span><span class="tech">Prisma</span>
-        </div>
-      </a>
       <a class="project reveal" href="https://github.com/SchearLoe/slpm" target="_blank" rel="noopener">
         <span class="icon">🫧</span>
-        <h3>slpm <span class="arrow">→</span></h3>
+        <h3>slpm <span class="lock public">公开 · 主力</span><span class="arrow">→</span></h3>
         <p>液态毛玻璃风格 · 智能任务与项目管理。周期性日程、动效细节、任务流转，把"待办清单"做成一件赏心悦目的工具。</p>
         <div class="tech-row">
           <span class="tech">Vue 3</span><span class="tech">TypeScript</span><span class="tech">Playwright E2E</span>
         </div>
       </a>
-      <a class="project reveal" href="https://github.com/SchearLoe" target="_blank" rel="noopener">
-        <span class="icon">🚀</span>
-        <h3>更多在造的东西 <span class="arrow">→</span></h3>
-        <p>健康管理系统、浏览器首页面板、一些自动化与实验性小玩具……仓库还在持续增加中，欢迎来 GitHub 逛逛。</p>
+      <div class="project static reveal">
+        <span class="icon">🛰️</span>
+        <h3>网络与流量安全系统 <span class="lock">私有</span></h3>
+        <p>GoBGP 的 Web 管理控制台：60 个 gRPC 接口全量代理为 REST、SSE 实时事件流，面向抗 DDoS 处置场景；另配一套 NetFlow v9 流量生成器实测采集链路。</p>
         <div class="tech-row">
-          <span class="tech">GitHub</span><span class="tech">WIP</span><span class="tech">WIP</span><span class="tech">WIP</span>
+          <span class="tech">Java 17</span><span class="tech">Spring Boot</span><span class="tech">gRPC</span><span class="tech">React</span><span class="tech">Python</span>
         </div>
-      </a>
+      </div>
+      <div class="project static reveal">
+        <span class="icon">🍎</span>
+        <h3>iOS 压力管理 App <span class="lock">私有</span></h3>
+        <p>整合 Apple Watch 的 HRV、静息心率与睡眠数据建立健康基线，给出看得懂的压力结论与可执行建议；Apple Intelligence 端侧生成洞察，行为-压力相关性分析。</p>
+        <div class="tech-row">
+          <span class="tech">Swift</span><span class="tech">watchOS</span><span class="tech">HealthKit</span><span class="tech">Apple Intelligence</span>
+        </div>
+      </div>
+      <div class="project static reveal">
+        <span class="icon">🏠</span>
+        <h3>家庭服务器网站 <span class="lock">私有</span></h3>
+        <p>部署在家里的家庭网站：相册对开翻页、时间线、视频轮播、留言白板、AI 流式问答一站式；白色毛玻璃风格，SQLite 零运维。</p>
+        <div class="tech-row">
+          <span class="tech">Vue 3</span><span class="tech">TypeScript</span><span class="tech">SQLite</span><span class="tech">Ollama</span>
+        </div>
+      </div>
     </div>
+    <details class="folding reveal">
+      <summary><span class="chev">▶</span> 还有些小东西 · 点开看看</summary>
+      <div class="fold-body">
+        <div class="fold-row">
+          <a href="https://github.com/SchearLoe/stationery-pos" target="_blank" rel="noopener">🧾 stationery-pos</a>
+          <span class="desc">给文具店做的收银系统：Electron + Vue3 收银端 / NestJS + PostgreSQL 云端。不是主业，但进销存、交接班、报表一应俱全。</span>
+        </div>
+        <div class="fold-row">
+          <a href="https://github.com/SchearLoe/SchearLoe.github.io" target="_blank" rel="noopener">🌐 这个主页</a>
+          <span class="desc">纯手写单文件 HTML/CSS/JS，零依赖零构建。</span>
+        </div>
+      </div>
+    </details>
   </section>
 </main>
 
@@ -379,7 +476,7 @@
   }
 
   /* ---------- 打字机 ---------- */
-  var phrases = ["全栈开发者。", "TypeScript 爱好者。", "把想法做成完整产品的人。", "从桌面端写到云端。", "永远在造新东西。"];
+  var phrases = ["网络流量方向的全栈工程师。", "Swift、TypeScript、Java、Python 都写。", "AI Agent 探索者。", "把生活也做成软件的人。", "文档写得比代码还认真。"];
   var el = document.getElementById("typed"), pi = 0, ci = 0, deleting = false;
   function tick() {
     var phrase = phrases[pi];
