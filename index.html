@@ -125,9 +125,32 @@
   @media (prefers-reduced-motion: reduce) {
     .block-cursor { animation: none; }
   }
+
+  /* ---------- 底层背景：拓扑图 / 漂浮日志 / 角标 ---------- */
+  #netbg { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+  .bg-meta {
+    position: fixed; z-index: 2; pointer-events: none; user-select: none;
+    font-size: 11px; color: var(--fg-dim); opacity: .6; letter-spacing: .08em; white-space: nowrap;
+  }
+  .bg-meta.tl { top: 14px; left: 18px; }
+  .bg-meta.tr { top: 14px; right: 18px; }
+  .bg-meta.bl { bottom: 14px; left: 18px; }
+  .bg-meta.br { bottom: 14px; right: 18px; }
+  .bg-log {
+    position: fixed; z-index: 2; pointer-events: none; user-select: none;
+    font-size: 11px; color: var(--fg-dim); white-space: nowrap; opacity: 0;
+    transition: opacity 1.4s ease; text-shadow: 0 0 10px var(--glow);
+  }
+  .bg-log.show { opacity: .6; }
+  @media (max-width: 1100px) { .bg-meta, .bg-log { display: none; } }
 </style>
 </head>
 <body class="crt">
+<canvas id="netbg" aria-hidden="true"></canvas>
+<div class="bg-meta tl" aria-hidden="true">┌─ AS65001 · SCHLOE-NET</div>
+<div class="bg-meta tr" aria-hidden="true">anycast · 185.199.108.153</div>
+<div class="bg-meta bl" aria-hidden="true">uptime 99.98% · no incident</div>
+<div class="bg-meta br" aria-hidden="true">bgp · netflow · agent · glass</div>
 <noscript>
   <div class="fallback">
     <h2>SchearLoe · 个人主页</h2>
@@ -172,6 +195,7 @@
     if (theme !== "green") document.body.setAttribute("data-theme", theme);
     document.getElementById("tmuxTheme").textContent = theme;
     try { localStorage.setItem("slTheme", theme); } catch (e) {}
+    if (netThemeRefresh) netThemeRefresh();
   }
   applyTheme();
 
@@ -183,6 +207,201 @@
   }
   tickClock();
   setInterval(tickClock, 15000);
+
+  /* ================= 底层背景：网络拓扑 + 报文 + 漂浮日志 ================= */
+  var netCanvas = document.getElementById("netbg");
+  var nctx = netCanvas.getContext("2d");
+  var netNodes = [], netEdges = [], netAdj = [], packets = [];
+  var netThemeRefresh = null, lastT = 0;
+
+  function cssVar(name) { return getComputedStyle(document.body).getPropertyValue(name).trim(); }
+
+  function netResize() {
+    netCanvas.width = innerWidth * devicePixelRatio;
+    netCanvas.height = innerHeight * devicePixelRatio;
+    netCanvas.style.width = innerWidth + "px";
+    netCanvas.style.height = innerHeight + "px";
+    nctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    buildNet();
+    if (reduced) drawNet(0);
+  }
+  function buildNet() {
+    netNodes = []; netEdges = []; netAdj = []; packets = [];
+    var w = innerWidth, h = innerHeight;
+    var cols = Math.max(4, Math.round(w / 165));
+    var rows = Math.max(3, Math.round(h / 165));
+    var cw = w / cols, ch = h / rows;
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        netNodes.push({
+          x: c * cw + cw * (0.22 + Math.random() * 0.56),
+          y: r * ch + ch * (0.22 + Math.random() * 0.56),
+          hub: false, label: null
+        });
+      }
+    }
+    netNodes.forEach(function (n, i) { netAdj[i] = []; });
+    netNodes.forEach(function (n, i) {
+      var near = netNodes.map(function (m, j) {
+        return { j: j, d: (m.x - n.x) * (m.x - n.x) + (m.y - n.y) * (m.y - n.y) };
+      }).filter(function (o) { return o.j !== i; })
+        .sort(function (a, b) { return a.d - b.d; })
+        .slice(0, 2 + (Math.random() < 0.35 ? 1 : 0));
+      near.forEach(function (o) { addEdge(i, o.j); });
+    });
+    /* 少量枢纽节点挂上 ASN 标注(与 bgp 彩蛋同一套编号) */
+    var labels = ["AS65001", "AS4134", "AS9808", "AS65002", "IX-PUB"];
+    labels.forEach(function (lab) {
+      var idx = Math.floor(Math.random() * netNodes.length);
+      netNodes[idx].hub = true;
+      netNodes[idx].label = lab;
+    });
+    spawnPackets();
+  }
+  var edgeSeen = {};
+  function addEdge(a, b) {
+    var k = a < b ? a + "-" + b : b + "-" + a;
+    if (a === b || edgeSeen[k]) return;
+    edgeSeen[k] = 1;
+    netEdges.push({ a: a, b: b });
+    netAdj[a].push(b);
+    netAdj[b].push(a);
+  }
+  function newPacket() {
+    var from = Math.floor(Math.random() * netNodes.length);
+    if (!netAdj[from].length) return null;
+    return {
+      from: from,
+      to: netAdj[from][Math.floor(Math.random() * netAdj[from].length)],
+      t: Math.random(),
+      sp: 0.00010 + Math.random() * 0.00022,
+      col: Math.random() < 0.5 ? "--green" : "--cyan"
+    };
+  }
+  function spawnPackets() {
+    packets = [];
+    var target = Math.min(16, Math.round(innerWidth * innerHeight / 95000));
+    for (var i = 0; i < target; i++) {
+      var p = newPacket();
+      if (p) packets.push(p);
+    }
+  }
+  function drawNet(dt) {
+    var green = cssVar("--green"), cyan = cssVar("--cyan"), dim = cssVar("--fg-dim");
+    nctx.clearRect(0, 0, innerWidth, innerHeight);
+    nctx.lineWidth = 1;
+    nctx.strokeStyle = dim;
+    nctx.globalAlpha = 0.13;
+    netEdges.forEach(function (ed) {
+      var a = netNodes[ed.a], b = netNodes[ed.b];
+      nctx.beginPath(); nctx.moveTo(a.x, a.y); nctx.lineTo(b.x, b.y); nctx.stroke();
+    });
+    netNodes.forEach(function (n) {
+      var s = n.hub ? 5 : 3;
+      nctx.globalAlpha = n.hub ? 0.5 : 0.26;
+      nctx.fillStyle = n.hub ? green : dim;
+      nctx.fillRect(n.x - s / 2, n.y - s / 2, s, s);
+      if (n.label) {
+        nctx.globalAlpha = 0.42;
+        nctx.fillStyle = n.hub ? green : dim;
+        nctx.font = "10px ui-monospace, Consolas, 'Courier New', monospace";
+        nctx.fillText(n.label, n.x + 8, n.y + 3);
+      }
+    });
+    if (!reduced && dt > 0) {
+      packets.forEach(function (p, i) {
+        p.t += p.sp * dt;
+        if (p.t >= 1) {
+          var next = netAdj[p.to];
+          if (next && next.length) {
+            p.from = p.to;
+            p.to = next[Math.floor(Math.random() * next.length)];
+          } else {
+            var np = newPacket();
+            if (np) packets[i] = np;
+            return;
+          }
+          p.t = 0;
+        }
+        var A = netNodes[p.from], B = netNodes[p.to];
+        var x = A.x + (B.x - A.x) * p.t, y = A.y + (B.y - A.y) * p.t;
+        nctx.globalAlpha = 0.75;
+        nctx.fillStyle = p.col === "--green" ? green : cyan;
+        nctx.beginPath();
+        nctx.arc(x, y, 1.8, 0, Math.PI * 2);
+        nctx.fill();
+        nctx.globalAlpha = 0.18;
+        nctx.beginPath();
+        nctx.arc(x, y, 5, 0, Math.PI * 2);
+        nctx.fill();
+      });
+    }
+    nctx.globalAlpha = 1;
+  }
+  netThemeRefresh = function () { if (reduced) drawNet(0); };
+  var netResizeTimer = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(netResizeTimer);
+    netResizeTimer = setTimeout(netResize, 180);
+  });
+  netResize();
+  if (!reduced) {
+    (function netLoop(ts) {
+      var dt = Math.min(60, (ts || 0) - lastT || 16);
+      lastT = ts || 0;
+      drawNet(dt);
+      requestAnimationFrame(netLoop);
+    })();
+  }
+
+  /* 漂浮日志:只在终端窗口两侧的空地上淡入淡出 */
+  var LOGS = [
+    "BGP KEEPALIVE ← 185.199.108.153",
+    "netflow v9 export: 2048 records",
+    "[ OK ] healthcheck · 200 OK",
+    "route-refresh sent → AS9808",
+    "AgentScope: ReAct step 3/7 ✓",
+    "SSE event stream · 42 listeners",
+    "cron: weekly report generated",
+    "HRV sample synced · HealthKit",
+    "deploy: master → prod ✓",
+    "SQLite VACUUM · 0.4s",
+    "peer 65002 established · 42d",
+    "cache warm · pnpm store ok"
+  ];
+  function spawnLogTick() {
+    setTimeout(function () {
+      trySpawnLog();
+      spawnLogTick();
+    }, 2400 + Math.random() * 3400);
+  }
+  function trySpawnLog() {
+    if (reduced || document.hidden || innerWidth < 1100) return;
+    if (document.querySelectorAll(".bg-log").length >= 3) return;
+    var term = document.querySelector(".term").getBoundingClientRect();
+    var pad = 34;
+    var leftSpace = term.left - pad;
+    var rightSpace = innerWidth - term.right - pad;
+    var el = document.createElement("div");
+    el.className = "bg-log";
+    el.textContent = LOGS[Math.floor(Math.random() * LOGS.length)];
+    el.style.top = (70 + Math.random() * (innerHeight - 190)) + "px";
+    var useLeft = Math.random() < 0.5;
+    if (useLeft && leftSpace > 140) {
+      el.style.left = (10 + Math.random() * (leftSpace - 140)) + "px";
+    } else if (rightSpace > 140) {
+      el.style.left = (term.right + pad + Math.random() * (rightSpace - 140)) + "px";
+    } else if (leftSpace > 140) {
+      el.style.left = (10 + Math.random() * (leftSpace - 140)) + "px";
+    } else {
+      return;
+    }
+    document.body.appendChild(el);
+    requestAnimationFrame(function () { el.classList.add("show"); });
+    setTimeout(function () { el.classList.remove("show"); }, 3600 + Math.random() * 1600);
+    setTimeout(function () { if (el.parentNode) el.remove(); }, 5800);
+  }
+  if (!reduced) spawnLogTick();
 
   /* ================= 输出引擎 ================= */
   function escapeHtml(s) {
@@ -201,18 +420,41 @@
   }
   function scrollBottom() { screenEl.scrollTop = screenEl.scrollHeight; }
 
+  /* ================= 帧驱动调度器 =================
+     打字机/开机动画不走 setTimeout(后台标签会被节流到秒级),
+     而是挂在 rAF 帧循环上:可见时全速,隐藏时暂停,回来继续。 */
+  var schedQ = [];
+  function schedule(fn, delay) {
+    if (reduced) { fn(); return; }
+    schedQ.push({ at: performance.now() + Math.max(0, delay || 0), fn: fn });
+  }
+  function runSched() {
+    var now = performance.now();
+    for (var i = 0; i < schedQ.length; ) {
+      if (schedQ[i].at <= now) {
+        var item = schedQ.splice(i, 1)[0];
+        item.fn();
+      } else i++;
+    }
+  }
+  (function schedLoop() {
+    runSched();
+    requestAnimationFrame(schedLoop);
+  })();
+
   /* 逐行打印（boot 用），返回 Promise */
   function typeLines(lines, lineDelay, charDelay) {
     return new Promise(function (resolve) {
       var i = 0;
       function next() {
+        bootDeadline();
         if (i >= lines.length) { resolve(); return; }
         var item = lines[i++];
         if (typeof item === "string") item = { html: item };
         if (reduced || charDelay === 0 || bootSkipped) {
           makeLine(lineHtml(item), item.cls);
           scrollBottom();
-          setTimeout(next, item.hold !== undefined ? item.hold : lineDelay);
+          schedule(next, item.hold !== undefined ? item.hold : lineDelay);
           return;
         }
         /* 逐字 */
@@ -223,16 +465,17 @@
         var text = item.text !== undefined ? item.text : item.html.replace(/<[^>]+>/g, "");
         var j = 0;
         (function tickChar() {
+          bootDeadline();
           if (bootSkipped) {
             div.innerHTML = lineHtml(item);
             scrollBottom();
-            setTimeout(next, 0);
+            schedule(next, 0);
             return;
           }
           span.textContent = text.slice(0, ++j);
           scrollBottom();
-          if (j < text.length) { setTimeout(tickChar, charDelay); }
-          else { setTimeout(next, item.hold !== undefined ? item.hold : lineDelay); }
+          if (j < text.length) { schedule(tickChar, charDelay); }
+          else { schedule(next, item.hold !== undefined ? item.hold : lineDelay); }
         })();
       }
       next();
@@ -362,7 +605,7 @@
       chain = chain.then(function () {
         makeLine(typeof l === "string" ? l : l.html, typeof l === "string" ? "" : l.cls);
         scrollBottom();
-        return new Promise(function (r) { setTimeout(r, delay || 12); });
+        return new Promise(function (r) { schedule(r, delay || 12); });
       });
     });
     return chain;
@@ -621,6 +864,11 @@
 
   /* ================= 开机动画 ================= */
   var bootSkipped = false;
+  var bootStart = performance.now();
+  /* 6 秒兜底:即使被浏览器节流(如标签页被切走),开机也不会拖过 6 秒 */
+  function bootDeadline() {
+    if (!bootSkipped && performance.now() - bootStart > 6000) bootSkipped = true;
+  }
   function skipBoot() { bootSkipped = true; }
   document.addEventListener("keydown", skipBoot, { once: true });
   screenEl.addEventListener("click", skipBoot, { once: true });
