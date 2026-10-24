@@ -3,529 +3,655 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="SchearLoe 的个人主页 — 网络流量方向的全栈开发者，也写 Swift 与 AI Agent。">
-<title>SchearLoe · 个人主页</title>
+<meta name="description" content="SchearLoe 的个人主页 — 一台可以 SSH 进去的机器。输入 help 开始探索。">
+<title>guest@schearloe.github.io</title>
 <link rel="icon" type="image/jpeg" href="avatar.png">
 <style>
   :root {
-    --bg: #05070d;
-    --bg-soft: #0a0e1a;
-    --text: #e8ebf5;
-    --text-dim: #9aa3b8;
-    --accent-1: #6366f1;
-    --accent-2: #a855f7;
-    --accent-3: #22d3ee;
-    --glass: rgba(255, 255, 255, .04);
-    --glass-border: rgba(255, 255, 255, .09);
-    --grad: linear-gradient(120deg, var(--accent-1), var(--accent-2) 50%, var(--accent-3));
-    --mono: ui-monospace, "JetBrains Mono", Consolas, "Courier New", monospace;
+    --term-bg: #0a0e12;
+    --term-panel: #0d1218;
+    --fg: #b8c4a8;
+    --fg-dim: #6b7a66;
+    --green: #7ee787;
+    --cyan: #76d7e8;
+    --amber: #e3b341;
+    --red: #f47067;
+    --blue: #6cb6ff;
+    --purple: #dcbdfb;
+    --glow: rgba(126, 231, 135, .12);
   }
+  [data-theme="cyan"] { --fg: #a8c8d8; --fg-dim: #5e7a86; --green: #76d7e8; --cyan: #7ee7df; --glow: rgba(118, 215, 232, .12); }
+  [data-theme="amber"] { --fg: #d8c9a8; --fg-dim: #8a7c60; --green: #e3b341; --cyan: #d8a878; --glow: rgba(227, 179, 65, .12); }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html, body { height: 100%; }
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    overflow-x: hidden;
-    line-height: 1.6;
+    background: #05070a;
+    font-family: ui-monospace, "Cascadia Mono", Consolas, "Courier New", "PingFang SC", "Microsoft YaHei", monospace;
+    color: var(--fg);
+    overflow: hidden;
   }
-  ::selection { background: rgba(99, 102, 241, .45); color: #fff; }
+  ::selection { background: var(--green); color: #000; }
 
-  /* ---------- 背景：粒子 + 极光 ---------- */
-  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-  .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .35; will-change: transform; }
-  .blob-1 { width: 55vmax; height: 55vmax; top: -25vmax; left: -15vmax; background: radial-gradient(circle, #4338ca 0%, transparent 65%); animation: drift1 26s ease-in-out infinite alternate; }
-  .blob-2 { width: 45vmax; height: 45vmax; bottom: -20vmax; right: -10vmax; background: radial-gradient(circle, #7e22ce 0%, transparent 65%); animation: drift2 32s ease-in-out infinite alternate; }
-  .blob-3 { width: 35vmax; height: 35vmax; top: 35%; left: 55%; background: radial-gradient(circle, #0e7490 0%, transparent 65%); animation: drift3 24s ease-in-out infinite alternate; }
-  @keyframes drift1 { to { transform: translate(12vmax, 8vmax) scale(1.15); } }
-  @keyframes drift2 { to { transform: translate(-10vmax, -12vmax) scale(1.1); } }
-  @keyframes drift3 { to { transform: translate(-14vmax, 10vmax) scale(1.2); } }
-
-  /* ---------- 顶部滚动进度条 ---------- */
-  .progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 99; background: transparent; }
-  .progress-bar { height: 100%; width: 0; background: var(--grad); box-shadow: 0 0 10px rgba(168, 85, 247, .8); }
-
-  /* ---------- 导航 ---------- */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 5vw; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    background: rgba(5, 7, 13, .55); border-bottom: 1px solid rgba(255, 255, 255, .06);
+  /* ---------- CRT 氛围 ---------- */
+  .crt::before {
+    content: ""; position: fixed; inset: 0; z-index: 50; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .14) 0 1px, transparent 1px 3px);
   }
-  .logo { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; text-decoration: none; background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .nav-links { display: flex; gap: 26px; }
-  .nav-links a { color: var(--text-dim); text-decoration: none; font-size: .92rem; transition: color .25s; position: relative; }
-  .nav-links a::after { content: ""; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px; background: var(--grad); transition: width .3s; border-radius: 2px; }
-  .nav-links a:hover { color: var(--text); }
-  .nav-links a:hover::after { width: 100%; }
+  .crt::after {
+    content: ""; position: fixed; inset: 0; z-index: 51; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .5) 100%);
+  }
 
-  /* ---------- Hero ---------- */
-  .hero {
-    position: relative; z-index: 1; min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 0 20px;
+  /* ---------- 终端窗口 ---------- */
+  .stage { height: 100%; display: flex; align-items: center; justify-content: center; padding: 0; }
+  @media (min-width: 760px) { .stage { padding: 22px; } }
+  .term {
+    display: flex; flex-direction: column; width: 100%; height: 100%;
+    background: var(--term-bg); box-shadow: 0 0 60px var(--glow), 0 0 0 1px #1c2430;
+    position: relative; z-index: 10;
   }
-  .avatar-wrap { position: relative; width: 148px; height: 148px; margin-bottom: 30px; }
-  .avatar-wrap::before {
-    content: ""; position: absolute; inset: -6px; border-radius: 50%; background: var(--grad);
-    animation: spin 5s linear infinite; z-index: 0;
+  @media (min-width: 760px) {
+    .term { max-width: 940px; height: calc(100% - 0px); border-radius: 10px; overflow: hidden; }
   }
-  .avatar-wrap::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; background: var(--grad); filter: blur(22px); opacity: .55; z-index: -1; }
-  .avatar { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 5px solid var(--bg); animation: spin 5s linear infinite reverse; z-index: 1; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .titlebar {
+    display: flex; align-items: center; gap: 8px; padding: 9px 14px;
+    background: var(--term-panel); border-bottom: 1px solid #1c2430; user-select: none; flex: none;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r { background: #f47067; } .dot-y { background: #e3b341; } .dot-g { background: #57ab5a; }
+  .titlebar .t { flex: 1; text-align: center; color: var(--fg-dim); font-size: .8rem; }
 
-  .hello { font-family: var(--mono); color: var(--accent-3); letter-spacing: .25em; font-size: .85rem; margin-bottom: 14px; }
-  h1.name {
-    font-size: clamp(2.8rem, 8vw, 5.2rem); font-weight: 800; letter-spacing: .02em;
-    background: linear-gradient(120deg, #fff 30%, #b9c0ff 60%, #d8b4fe);
-    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  .screen {
+    flex: 1; overflow-y: auto; padding: 16px 18px 22px; font-size: 13.5px; line-height: 1.75;
+    cursor: text; scrollbar-width: thin; scrollbar-color: #2a3646 transparent;
   }
-  .typing-line { margin-top: 18px; font-size: clamp(1.05rem, 2.6vw, 1.5rem); color: var(--text-dim); min-height: 2.2em; }
-  .typed { color: var(--text); }
-  .cursor { display: inline-block; width: 2px; height: 1.15em; background: var(--accent-2); vertical-align: -0.2em; margin-left: 3px; animation: blink 1s steps(1) infinite; }
+  .screen::-webkit-scrollbar { width: 8px; }
+  .screen::-webkit-scrollbar-thumb { background: #2a3646; border-radius: 4px; }
+  @media (max-width: 480px) { .screen { font-size: 12px; } }
+
+  /* 输出行颜色 */
+  .ok { color: var(--green); }
+  .dim { color: var(--fg-dim); }
+  .cyan { color: var(--cyan); }
+  .amber { color: var(--amber); }
+  .red { color: var(--red); }
+  .blue { color: var(--blue); }
+  .purple { color: var(--purple); }
+  .w { color: #fff; }
+  a.lnk { color: var(--cyan); text-decoration: underline; text-underline-offset: 3px; }
+  a.lnk:hover { color: #fff; }
+  .line { white-space: pre-wrap; word-break: break-word; min-height: 1.2em; }
+  .line a { pointer-events: auto; }
+
+  .prompt-html .u { color: var(--green); }
+  .prompt-html .p { color: var(--fg-dim); }
+  .prompt-html .path { color: var(--blue); }
+
+  /* 输入行 */
+  .input-row { display: flex; align-items: center; flex-wrap: wrap; }
+  .input-row .mirror { white-space: pre-wrap; word-break: break-all; }
+  .block-cursor {
+    display: inline-block; width: .62em; height: 1.15em; background: var(--green);
+    vertical-align: text-bottom; margin-left: 1px; animation: blink 1.05s steps(1) infinite;
+  }
   @keyframes blink { 50% { opacity: 0; } }
 
-  .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 34px; }
-  .badge {
-    font-family: var(--mono); font-size: .8rem; padding: 7px 16px; border-radius: 999px;
-    border: 1px solid var(--glass-border); background: var(--glass); color: var(--text-dim);
-    transition: transform .25s, border-color .25s, color .25s;
+  #kbd {
+    position: absolute; opacity: 0; width: 1px; height: 1px; border: 0; padding: 0;
+    left: -9999px; top: 0;
   }
-  .badge:hover { transform: translateY(-3px); border-color: rgba(168, 85, 247, .6); color: var(--text); }
 
-  .hero-cta { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; justify-content: center; }
-  .btn {
-    text-decoration: none; font-size: .95rem; padding: 13px 30px; border-radius: 12px; font-weight: 600;
-    transition: transform .25s, box-shadow .25s; display: inline-flex; align-items: center; gap: 8px;
-  }
-  .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 4px 24px rgba(139, 92, 246, .35); }
-  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(139, 92, 246, .55); }
-  .btn-ghost { border: 1px solid var(--glass-border); color: var(--text); background: var(--glass); }
-  .btn-ghost:hover { transform: translateY(-3px); border-color: rgba(34, 211, 238, .5); }
+  /* neofetch */
+  .neo { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin: 4px 0; }
+  .neo img { width: 108px; height: 108px; border-radius: 8px; border: 1px solid #2a3646; image-rendering: auto; }
+  .neo .kv { white-space: pre-wrap; }
 
-  .scroll-hint { position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%); color: var(--text-dim); font-size: .78rem; letter-spacing: .2em; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .scroll-hint .mouse { width: 22px; height: 36px; border: 1.5px solid var(--text-dim); border-radius: 12px; position: relative; }
-  .scroll-hint .mouse::after { content: ""; position: absolute; top: 7px; left: 50%; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 3px; background: var(--accent-3); animation: wheel 1.6s ease-in-out infinite; }
-  @keyframes wheel { 0% { opacity: 1; transform: translateY(0); } 70% { opacity: 0; transform: translateY(10px); } 100% { opacity: 0; } }
+  .banner { color: var(--green); text-shadow: 0 0 12px var(--glow); }
+  .banner-sub { color: var(--fg-dim); }
 
-  /* ---------- 区块 ---------- */
-  main { position: relative; z-index: 1; }
-  section { max-width: 1080px; margin: 0 auto; padding: 90px 24px 30px; }
-  .section-tag { font-family: var(--mono); color: var(--accent-3); font-size: .82rem; letter-spacing: .25em; margin-bottom: 10px; }
-  h2.section-title { font-size: clamp(1.7rem, 4.5vw, 2.4rem); font-weight: 800; margin-bottom: 34px; }
-  h2.section-title .hl { background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  /* ---------- tmux 状态栏 ---------- */
+  .tmux {
+    flex: none; display: flex; align-items: center; gap: 14px; padding: 6px 14px;
+    background: var(--term-panel); border-top: 1px solid #1c2430; font-size: .78rem; color: var(--fg-dim);
+    user-select: none;
+  }
+  .tmux .seg-on { background: #1f2d3d; color: var(--green); padding: 1px 8px; border-radius: 4px; }
+  .tmux .seg { background: #16202c; padding: 1px 8px; border-radius: 4px; }
+  .tmux .grow { flex: 1; text-align: center; }
+  @media (max-width: 640px) { .tmux .grow { display: none; } }
 
-  .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; }
-  @media (max-width: 760px) { .about-grid { grid-template-columns: 1fr; } }
-  .card {
-    background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px;
-    padding: 28px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  }
-  .about-text p { color: var(--text-dim); margin-bottom: 14px; }
-  .about-text strong { color: var(--text); font-weight: 600; }
-
-  .skill-group + .skill-group { margin-top: 18px; }
-  .skill-label { font-family: var(--mono); font-size: .78rem; color: var(--accent-3); letter-spacing: .12em; margin-bottom: 8px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    font-size: .82rem; padding: 5px 13px; border-radius: 8px; color: var(--text-dim);
-    background: rgba(255, 255, 255, .05); border: 1px solid transparent; transition: all .25s;
-  }
-  .chip:hover { color: var(--text); border-color: rgba(99, 102, 241, .55); background: rgba(99, 102, 241, .12); transform: translateY(-2px); }
-
-  /* ---------- 项目卡片 ---------- */
-  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-  .project {
-    position: relative; border-radius: 18px; overflow: hidden;
-    background: var(--glass); border: 1px solid var(--glass-border);
-    padding: 28px; text-decoration: none; color: var(--text); display: block;
-    transform-style: preserve-3d; will-change: transform;
-    transition: border-color .3s, box-shadow .3s;
-  }
-  .project::before {
-    content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .35s; pointer-events: none;
-    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(139, 92, 246, .16), transparent 65%);
-  }
-  .project:hover::before { opacity: 1; }
-  .project:hover { border-color: rgba(168, 85, 247, .45); box-shadow: 0 14px 44px rgba(99, 102, 241, .18); }
-  .project .icon { font-size: 1.9rem; margin-bottom: 14px; display: block; }
-  .project h3 { font-size: 1.18rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-  .project h3 .arrow { opacity: 0; transform: translateX(-6px); transition: all .3s; font-size: 1rem; }
-  .project:hover h3 .arrow { opacity: 1; transform: translateX(0); }
-  .project p { color: var(--text-dim); font-size: .9rem; margin-bottom: 18px; }
-  .tech-row { display: flex; flex-wrap: wrap; gap: 7px; }
-  .tech { font-family: var(--mono); font-size: .72rem; padding: 3px 10px; border-radius: 6px; color: var(--accent-3); background: rgba(34, 211, 238, .08); border: 1px solid rgba(34, 211, 238, .18); }
-  .lock {
-    font-family: var(--mono); font-size: .7rem; font-weight: 600; padding: 3px 10px; border-radius: 6px;
-    color: #fbbf24; background: rgba(251, 191, 36, .08); border: 1px solid rgba(251, 191, 36, .28); margin-left: auto;
-  }
-  .lock.public { color: #34d399; background: rgba(52, 211, 153, .08); border-color: rgba(52, 211, 153, .3); }
-  .project.static { cursor: default; }
-
-  /* ---------- 最近在忙 ---------- */
-  .now-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
-  .now-card {
-    background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 22px;
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    transition: transform .25s, border-color .25s;
-  }
-  .now-card:hover { transform: translateY(-4px); border-color: rgba(34, 211, 238, .4); }
-  .now-card .n-icon { font-size: 1.5rem; margin-bottom: 10px; display: block; }
-  .now-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
-  .now-card p { color: var(--text-dim); font-size: .84rem; }
-
-  /* ---------- 折叠区 ---------- */
-  .folding { margin-top: 26px; }
-  .folding summary {
-    list-style: none; cursor: pointer; user-select: none;
-    display: flex; align-items: center; gap: 10px;
-    background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px;
-    padding: 16px 22px; color: var(--text-dim); font-size: .95rem;
-    transition: border-color .25s, color .25s;
-  }
-  .folding summary::-webkit-details-marker { display: none; }
-  .folding summary:hover { border-color: rgba(168, 85, 247, .45); color: var(--text); }
-  .folding summary .chev { transition: transform .3s; font-size: .75rem; }
-  .folding[open] summary .chev { transform: rotate(90deg); }
-  .fold-body { padding: 12px 2px 0; display: grid; gap: 10px; }
-  .fold-row {
-    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
-    background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 20px;
-  }
-  .fold-row a { color: var(--text); text-decoration: none; font-weight: 700; border-bottom: 1px dashed rgba(255, 255, 255, .25); }
-  .fold-row a:hover { color: #c7d2fe; border-bottom-color: #c7d2fe; }
-  .fold-row .desc { color: var(--text-dim); font-size: .88rem; }
-
-  /* ---------- 页脚 ---------- */
-  footer {
-    position: relative; z-index: 1; text-align: center; padding: 60px 20px 40px; color: var(--text-dim); font-size: .85rem;
-  }
-  footer .links { display: flex; justify-content: center; gap: 22px; margin-bottom: 18px; }
-  footer a { color: var(--text-dim); text-decoration: none; transition: color .25s; display: inline-flex; align-items: center; gap: 6px; }
-  footer a:hover { color: var(--text); }
-  footer .heart { color: #f472b6; display: inline-block; animation: beat 1.2s ease-in-out infinite; }
-  @keyframes beat { 0%, 100% { transform: scale(1); } 25% { transform: scale(1.25); } }
-
-  /* ---------- 滚动浮现 ---------- */
-  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2, .65, .3, 1), transform .8s cubic-bezier(.2, .65, .3, 1); }
-  .reveal.visible { opacity: 1; transform: none; }
-
-  @media (max-width: 640px) {
-    .nav-links { display: none; }
-    section { padding: 70px 18px 20px; }
-  }
-  @media (max-height: 780px) { .scroll-hint { display: none; } }
+  noscript .fallback { padding: 40px; }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation: none !important; transition: none !important; }
-    .reveal { opacity: 1; transform: none; }
+    .block-cursor { animation: none; }
   }
 </style>
 </head>
-<body>
+<body class="crt">
+<noscript>
+  <div class="fallback">
+    <h2>SchearLoe · 个人主页</h2>
+    <p>这个页面是一台可交互的"终端机器"，需要启用 JavaScript 才能运行。</p>
+    <p>简介：网络流量方向的全栈工程师 —— GoBGP 控制台 / NetFlow 工具 / AI Agent / iOS 健康应用 / 液态毛玻璃任务管理 slpm。</p>
+    <p><a href="https://github.com/SchearLoe">GitHub: github.com/SchearLoe</a></p>
+  </div>
+</noscript>
 
-<canvas id="particles"></canvas>
-<div class="aurora" aria-hidden="true">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
+<div class="stage">
+  <div class="term">
+    <div class="titlebar">
+      <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      <span class="t">guest@schearloe: ~ — ssh · 80×24</span>
+    </div>
+    <div class="screen" id="screen"></div>
+    <div class="tmux">
+      <span class="seg-on">0:main*</span>
+      <span class="seg">schearloe.github.io</span>
+      <span class="grow">输入 <span class="ok">help</span> 查看命令 · ↑↓ 翻历史 · Tab 补全</span>
+      <span class="seg" id="tmuxTheme">green</span>
+      <span class="seg" id="tmuxClock">--:--</span>
+    </div>
+  </div>
 </div>
-<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
 
-<nav>
-  <a class="logo" href="#">SchearLoe</a>
-  <div class="nav-links">
-    <a href="#about">关于</a>
-    <a href="#now">近况</a>
-    <a href="#projects">项目</a>
-    <a href="https://github.com/SchearLoe" target="_blank" rel="noopener">GitHub</a>
-  </div>
-</nav>
-
-<header class="hero">
-  <div class="avatar-wrap">
-    <img class="avatar" src="avatar.png" alt="SchearLoe 的头像">
-  </div>
-  <div class="hello">HELLO, WORLD 👋</div>
-  <h1 class="name">SchearLoe</h1>
-  <div class="typing-line">我是 <span class="typed" id="typed"></span><span class="cursor"></span></div>
-  <div class="hero-badges">
-    <span class="badge">🛰️ 网络流量 × 安全</span>
-    <span class="badge">⌨️ TypeScript / Swift / Java / Python</span>
-    <span class="badge">🤖 AI Agent 探索</span>
-    <span class="badge">🫧 毛玻璃美学爱好者</span>
-  </div>
-  <div class="hero-cta">
-    <a class="btn btn-primary" href="#projects">看看我的项目 →</a>
-    <a class="btn btn-ghost" href="https://github.com/SchearLoe" target="_blank" rel="noopener">
-      <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-      GitHub
-    </a>
-  </div>
-  <div class="scroll-hint"><div class="mouse"></div>SCROLL</div>
-</header>
-
-<main>
-  <section id="about">
-    <div class="reveal">
-      <div class="section-tag">// ABOUT ME</div>
-      <h2 class="section-title">关于<span class="hl">我</span></h2>
-    </div>
-    <div class="about-grid">
-      <div class="card about-text reveal">
-        <p><strong>你好，我是 SchearLoe。</strong>主业在<strong>网络与流量安全</strong>方向：做过 GoBGP 的 Web 管理控制台、NetFlow 流量生成与采集测试系统，也在给异常流量分析系统造 AI 巡检助手。</p>
-        <p>下班后接着造：<strong>slpm</strong>（液态毛玻璃任务管理）是我的主力公开项目；还给 Apple Watch 写了压力管理 App，给家里搭了"相册 + 留言板 + AI 助手"的家庭网站。</p>
-        <p>一个小执念：<strong>东西要做完整</strong>——部署指南、使用手册、架构文档、E2E 测试，一个都不能少。</p>
-      </div>
-      <div class="card reveal">
-        <div class="skill-group">
-          <div class="skill-label">FRONTEND</div>
-          <div class="chips">
-            <span class="chip">Vue 3</span><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Electron</span><span class="chip">Vite</span>
-          </div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-label">BACKEND</div>
-          <div class="chips">
-            <span class="chip">Spring Boot</span><span class="chip">gRPC</span><span class="chip">NestJS</span><span class="chip">FastAPI</span><span class="chip">Node.js</span>
-          </div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-label">APPLE & AI</div>
-          <div class="chips">
-            <span class="chip">Swift</span><span class="chip">watchOS</span><span class="chip">HealthKit</span><span class="chip">RAG</span><span class="chip">Ollama</span>
-          </div>
-        </div>
-        <div class="skill-group">
-          <div class="skill-label">DATA & OPS</div>
-          <div class="chips">
-            <span class="chip">PostgreSQL</span><span class="chip">SQLite</span><span class="chip">Prometheus</span><span class="chip">Playwright</span><span class="chip">Docker</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="now">
-    <div class="reveal">
-      <div class="section-tag">// NOW</div>
-      <h2 class="section-title">最近在<span class="hl">忙</span></h2>
-    </div>
-    <div class="now-grid">
-      <div class="now-card reveal">
-        <span class="n-icon">🛰️</span>
-        <h3>网络与流量分析</h3>
-        <p>BGP 控制台、NetFlow 流量生成、采集链路测试。</p>
-      </div>
-      <div class="now-card reveal">
-        <span class="n-icon">🤖</span>
-        <h3>AI Agent 落地</h3>
-        <p>ReAct 智能体 + RAG，给运维巡检做产品化验证。</p>
-      </div>
-      <div class="now-card reveal">
-        <span class="n-icon">🍎</span>
-        <h3>iOS 健康应用</h3>
-        <p>基于 Apple Watch 数据的压力管理，持续迭代中。</p>
-      </div>
-      <div class="now-card reveal">
-        <span class="n-icon">🏠</span>
-        <h3>家庭自托管</h3>
-        <p>家庭服务器上的相册、留言板和 AI 助手。</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="projects">
-    <div class="reveal">
-      <div class="section-tag">// PROJECTS</div>
-      <h2 class="section-title">精选<span class="hl">项目</span></h2>
-    </div>
-    <div class="projects-grid">
-      <a class="project reveal" href="https://github.com/SchearLoe/slpm" target="_blank" rel="noopener">
-        <span class="icon">🫧</span>
-        <h3>slpm <span class="lock public">公开 · 主力</span><span class="arrow">→</span></h3>
-        <p>液态毛玻璃风格 · 智能任务与项目管理。周期性日程、动效细节、任务流转，把"待办清单"做成一件赏心悦目的工具。</p>
-        <div class="tech-row">
-          <span class="tech">Vue 3</span><span class="tech">TypeScript</span><span class="tech">Playwright E2E</span>
-        </div>
-      </a>
-      <div class="project static reveal">
-        <span class="icon">🛰️</span>
-        <h3>网络与流量安全系统 <span class="lock">私有</span></h3>
-        <p>GoBGP 的 Web 管理控制台：60 个 gRPC 接口全量代理为 REST、SSE 实时事件流，面向抗 DDoS 处置场景；另配一套 NetFlow v9 流量生成器实测采集链路。</p>
-        <div class="tech-row">
-          <span class="tech">Java 17</span><span class="tech">Spring Boot</span><span class="tech">gRPC</span><span class="tech">React</span><span class="tech">Python</span>
-        </div>
-      </div>
-      <div class="project static reveal">
-        <span class="icon">🍎</span>
-        <h3>iOS 压力管理 App <span class="lock">私有</span></h3>
-        <p>整合 Apple Watch 的 HRV、静息心率与睡眠数据建立健康基线，给出看得懂的压力结论与可执行建议；Apple Intelligence 端侧生成洞察，行为-压力相关性分析。</p>
-        <div class="tech-row">
-          <span class="tech">Swift</span><span class="tech">watchOS</span><span class="tech">HealthKit</span><span class="tech">Apple Intelligence</span>
-        </div>
-      </div>
-      <div class="project static reveal">
-        <span class="icon">🏠</span>
-        <h3>家庭服务器网站 <span class="lock">私有</span></h3>
-        <p>部署在家里的家庭网站：相册对开翻页、时间线、视频轮播、留言白板、AI 流式问答一站式；白色毛玻璃风格，SQLite 零运维。</p>
-        <div class="tech-row">
-          <span class="tech">Vue 3</span><span class="tech">TypeScript</span><span class="tech">SQLite</span><span class="tech">Ollama</span>
-        </div>
-      </div>
-    </div>
-    <details class="folding reveal">
-      <summary><span class="chev">▶</span> 还有些小东西 · 点开看看</summary>
-      <div class="fold-body">
-        <div class="fold-row">
-          <a href="https://github.com/SchearLoe/stationery-pos" target="_blank" rel="noopener">🧾 stationery-pos</a>
-          <span class="desc">给文具店做的收银系统：Electron + Vue3 收银端 / NestJS + PostgreSQL 云端。不是主业，但进销存、交接班、报表一应俱全。</span>
-        </div>
-        <div class="fold-row">
-          <a href="https://github.com/SchearLoe/SchearLoe.github.io" target="_blank" rel="noopener">🌐 这个主页</a>
-          <span class="desc">纯手写单文件 HTML/CSS/JS，零依赖零构建。</span>
-        </div>
-      </div>
-    </details>
-  </section>
-</main>
-
-<footer>
-  <div class="links">
-    <a href="https://github.com/SchearLoe" target="_blank" rel="noopener">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-      GitHub
-    </a>
-    <a href="https://schearloe.github.io">schearloe.github.io</a>
-  </div>
-  <div>© 2026 SchearLoe · Made with <span class="heart">❤</span> and vanilla JS</div>
-</footer>
+<input id="kbd" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="终端输入">
 
 <script>
 (function () {
   "use strict";
+  var screenEl = document.getElementById("screen");
+  var kbd = document.getElementById("kbd");
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- 粒子网络背景 ---------- */
-  var canvas = document.getElementById("particles");
-  var ctx = canvas.getContext("2d");
-  var particles = [], mouse = { x: null, y: null }, rafId = null;
-
-  function resize() {
-    canvas.width = window.innerWidth * devicePixelRatio;
-    canvas.height = window.innerHeight * devicePixelRatio;
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
-    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    init();
+  /* ================= 主题 ================= */
+  var THEMES = ["green", "cyan", "amber"];
+  var theme = "green";
+  try { theme = localStorage.getItem("slTheme") || "green"; } catch (e) {}
+  function applyTheme() {
+    document.body.removeAttribute("data-theme");
+    if (theme !== "green") document.body.setAttribute("data-theme", theme);
+    document.getElementById("tmuxTheme").textContent = theme;
+    try { localStorage.setItem("slTheme", theme); } catch (e) {}
   }
-  function init() {
-    var w = window.innerWidth, h = window.innerHeight;
-    var count = Math.min(110, Math.floor(w * h / 16000));
-    particles = [];
-    for (var i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * w, y: Math.random() * h,
-        vx: (Math.random() - .5) * .45, vy: (Math.random() - .5) * .45,
-        r: Math.random() * 1.6 + .6
+  applyTheme();
+
+  /* ================= 时钟 ================= */
+  function tickClock() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    document.getElementById("tmuxClock").textContent = p(d.getHours()) + ":" + p(d.getMinutes());
+  }
+  tickClock();
+  setInterval(tickClock, 15000);
+
+  /* ================= 输出引擎 ================= */
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function lineHtml(item) {
+    if (item.html !== undefined) return item.html;
+    return item.text !== undefined ? escapeHtml(item.text) : "&nbsp;";
+  }
+  function makeLine(html, cls) {
+    var div = document.createElement("div");
+    div.className = "line" + (cls ? " " + cls : "");
+    div.innerHTML = html || "&nbsp;";
+    screenEl.appendChild(div);
+    return div;
+  }
+  function scrollBottom() { screenEl.scrollTop = screenEl.scrollHeight; }
+
+  /* 逐行打印（boot 用），返回 Promise */
+  function typeLines(lines, lineDelay, charDelay) {
+    return new Promise(function (resolve) {
+      var i = 0;
+      function next() {
+        if (i >= lines.length) { resolve(); return; }
+        var item = lines[i++];
+        if (typeof item === "string") item = { html: item };
+        if (reduced || charDelay === 0 || bootSkipped) {
+          makeLine(lineHtml(item), item.cls);
+          scrollBottom();
+          setTimeout(next, item.hold !== undefined ? item.hold : lineDelay);
+          return;
+        }
+        /* 逐字 */
+        var div = makeLine("", item.cls);
+        var span = document.createElement("span");
+        div.textContent = "";
+        div.appendChild(span);
+        var text = item.text !== undefined ? item.text : item.html.replace(/<[^>]+>/g, "");
+        var j = 0;
+        (function tickChar() {
+          if (bootSkipped) {
+            div.innerHTML = lineHtml(item);
+            scrollBottom();
+            setTimeout(next, 0);
+            return;
+          }
+          span.textContent = text.slice(0, ++j);
+          scrollBottom();
+          if (j < text.length) { setTimeout(tickChar, charDelay); }
+          else { setTimeout(next, item.hold !== undefined ? item.hold : lineDelay); }
+        })();
+      }
+      next();
+    });
+  }
+
+  /* ================= 提示符 ================= */
+  function promptHTML() {
+    return '<span class="u">guest@schearloe</span><span class="p">:</span><span class="path">~</span><span class="p">$</span> ';
+  }
+  var inputRow = null, mirror = null, cursor = null;
+
+  function showPrompt() {
+    inputRow = document.createElement("div");
+    inputRow.className = "line input-row";
+    inputRow.innerHTML = promptHTML() +
+      '<span class="mirror"></span><span class="block-cursor"></span>';
+    mirror = inputRow.querySelector(".mirror");
+    cursor = inputRow.querySelector(".block-cursor");
+    screenEl.appendChild(inputRow);
+    scrollBottom();
+    /* 输出打印期间按下的回车:提示符就绪后自动提交 */
+    if (pendingSubmit) {
+      pendingSubmit = false;
+      if (kbd.value) {
+        var queued = kbd.value;
+        kbd.value = "";
+        mirror.textContent = "";
+        runCommand(queued);
+      }
+    }
+  }
+  function removePrompt() {
+    if (inputRow && inputRow.parentNode) inputRow.parentNode.removeChild(inputRow);
+    inputRow = null;
+  }
+
+  /* ================= 命令数据 ================= */
+  var ABOUT = [
+    "你好,我是 <span class='w'>SchearLoe</span>。",
+    "",
+    "主业在<span class='cyan'>网络与流量安全</span>方向:",
+    "  · GoBGP 的 Web 管理控制台(Java 17 + Spring Boot 3,gRPC 全量代理 + SSE)",
+    "  · NetFlow v9 流量生成与采集测试系统(Python)",
+    "  · 给异常流量分析系统造 AI 巡检助手(AgentScope + RAG)",
+    "",
+    "下班后接着造:液态毛玻璃任务管理 <span class='cyan'>slpm</span>(主力公开项目)、",
+    "Apple Watch 压力管理 App、家庭服务器网站,以及一个文具店收银系统。",
+    "",
+    "小执念:<span class='amber'>东西要做完整</span> —— 部署指南、使用手册、架构文档、E2E 测试,一个都不能少。"
+  ];
+  var PROJECTS = {
+    "slpm": {
+      title: "slpm ★ 公开主力",
+      desc: [
+        "液态毛玻璃风格 · 智能任务与项目管理。",
+        "周期性日程、动效细节、任务流转,把待办清单做成赏心悦目的工具。",
+        "技术: Vue 3 / TypeScript / Playwright E2E",
+        "仓库: https://github.com/SchearLoe/slpm"
+      ]
+    },
+    "network": {
+      title: "🔒 network — 网络与流量安全系统(私有)",
+      desc: [
+        "GoBGP 的 Web 管理控制台:60 个 gRPC 接口全量代理为 REST,",
+        "WatchEvent 桥接为 SSE 实时事件流,面向抗 DDoS 处置场景。",
+        "另配一套 NetFlow v9 流量生成器,真实 UDP 发包实测采集链路。",
+        "技术: Java 17 / Spring Boot 3 / grpc-java / React 17 / Python",
+        "(私有项目,只在这里能看到它的故事)"
+      ]
+    },
+    "health": {
+      title: "🔒 health — iOS 压力管理 App(私有)",
+      desc: [
+        "整合 Apple Watch 的 HRV、静息心率与睡眠数据建立健康基线,",
+        "给出看得懂的压力结论与可执行建议;四个触点同步(iPhone / Watch / 小组件 / 表盘)。",
+        "Apple Intelligence 端侧生成洞察,行为-压力 Pearson 相关性分析,自动周报。",
+        "技术: Swift / watchOS / HealthKit / Apple Intelligence"
+      ]
+    },
+    "home": {
+      title: "🔒 home — 家庭服务器网站(私有)",
+      desc: [
+        "部署在家里的家庭网站:相册对开翻页、EXIF 时间线、视频轮播、",
+        "静态页托管、留言白板、AI 流式问答(OpenAI 兼容 / Ollama)。",
+        "白色毛玻璃风格,SQLite 零运维,适配电脑 / iPad / 手机。",
+        "技术: Vue 3 / TypeScript / SQLite / Ollama"
+      ]
+    },
+    "pos": {
+      title: "stationery-pos(公开,已归档进 archive/)",
+      desc: [
+        "给文具店做的收银系统:Electron + Vue3 收银端 / NestJS + PostgreSQL 云端。",
+        "进销存、交接班、报表、采购应付、会员储值积分、账目月结。",
+        "不是主业,但五脏俱全。仓库: https://github.com/SchearLoe/stationery-pos"
+      ]
+    }
+  };
+  var PROJECT_FILES = ["slpm.md", "network.md", "health.md", "home.md", "archive/pos.md"];
+  var SKILLS = [
+    "<span class='cyan'>languages/</span>",
+    "  TypeScript  <span class='ok'>████████░░</span>  主力语言",
+    "  Swift       <span class='ok'>██████░░░░</span>  iOS / watchOS",
+    "  Java        <span class='ok'>██████░░░░</span>  Spring Boot + gRPC",
+    "  Python      <span class='ok'>█████░░░░░</span>  工具 & Agent",
+    "<span class='cyan'>frontend/</span>",
+    "  Vue 3 · React · Electron · Vite",
+    "<span class='cyan'>backend/</span>",
+    "  Spring Boot · gRPC · NestJS · FastAPI · Node.js",
+    "<span class='cyan'>data-ai/</span>",
+    "  PostgreSQL · SQLite · RAG · Ollama · HealthKit",
+    "<span class='cyan'>ops/</span>",
+    "  Prometheus · Playwright · Docker · Wireshark 抓包常识"
+  ];
+  var NOW = [
+    "<span class='cyan'>now/</span>",
+    "  🛰️  网络与流量分析   BGP 控制台 · NetFlow 生成 · 采集链路测试",
+    "  🤖  AI Agent 落地   ReAct 智能体 + RAG,运维巡检产品化验证",
+    "  🍎  iOS 健康应用    Apple Watch 压力管理,持续迭代",
+    "  🏠  家庭自托管      相册 / 留言板 / AI 助手"
+  ];
+
+  /* ================= 输出辅助 ================= */
+  function printLines(arr, delay) {
+    var chain = Promise.resolve();
+    arr.forEach(function (l) {
+      chain = chain.then(function () {
+        makeLine(typeof l === "string" ? l : l.html, typeof l === "string" ? "" : l.cls);
+        scrollBottom();
+        return new Promise(function (r) { setTimeout(r, delay || 12); });
+      });
+    });
+    return chain;
+  }
+  function bannerHTML() {
+    return [
+      "<span class='banner'>╔══════════════════════════════╗</span>",
+      "<span class='banner'>║   S C H E A R L O E   v2.0   ║</span>",
+      "<span class='banner'>╚══════════════════════════════╝</span>",
+      "<span class='banner-sub'>     一台你可以操作的机器 · 输入 help 开始</span>",
+      ""
+    ];
+  }
+  function link(url) { return "<a class='lnk' href='" + url + "' target='_blank' rel='noopener'>" + url + "</a>"; }
+
+  /* ================= 命令实现 ================= */
+  var history = [], histIdx = -1;
+
+  function cmdHelp() {
+    return printLines([
+      "<span class='cyan'>可用命令:</span>",
+      "  whoami            你是谁(以及我是谁)",
+      "  about             详细自我介绍",
+      "  ls  [projects]    列目录(试试 ls -a)",
+      "  cat &lt;file&gt;        读文件: about.md / now.log / projects/*.md",
+      "  skills            技能树",
+      "  now               最近在忙什么",
+      "  neofetch          系统信息(带彩蛋)",
+      "  contact           联系方式",
+      "  theme             切换配色(绿 / 青 / 琥珀)",
+      "  clear             清屏 ·  <span class='dim'>date / echo / history 也在</span>",
+      "",
+      "<span class='dim'>……还有一些没写出来的。curiosity &gt; help。</span>"
+    ], 14);
+  }
+  function cmdWhoami() {
+    return printLines([
+      "visitor",
+      "<span class='dim'>—— 一位访客。这台机器的主人:输入 about 认识一下。</span>"
+    ], 30);
+  }
+  function cmdAbout() { return printLines(ABOUT, 16); }
+  function cmdSkills() { return printLines(SKILLS, 16); }
+  function cmdNow() { return printLines(NOW, 16); }
+  function cmdContact() {
+    return printLines([
+      "<span class='cyan'>GitHub</span>  " + link("https://github.com/SchearLoe"),
+      "<span class='dim'>有想聊的?去 GitHub 找到我,issue 或 PR 都行。</span>"
+    ], 25);
+  }
+  function cmdNeofetch() {
+    screenEl.appendChild((function () {
+      var d = document.createElement("div"); d.className = "line";
+      d.innerHTML = "<div class='neo'><img src='avatar.png' alt='avatar'><div class='kv'>" +
+        "<span class='ok'>guest@schearloe.github.io</span><br>" +
+        "<span class='dim'>-----------------------</span><br>" +
+        "<span class='cyan'>OS:</span>       写码的操作系统,两个都摸(macOS / Windows)<br>" +
+        "<span class='cyan'>Kernel:</span>   vanilla-js —— 本站零框架手写<br>" +
+        "<span class='cyan'>Shell:</span>    bash · zsh · pwsh<br>" +
+        "<span class='cyan'>Packages:</span> TypeScript Swift Java Python Vue React<br>" +
+        "<span class='cyan'>Uptime:</span>   自 2018 年在 GitHub 留下第一行字起<br>" +
+        "<span class='cyan'>Theme:</span>    毛玻璃 &amp; CRT 双修<br>" +
+        "<span class='cyan'> Mood:</span>    ⌨️ 深夜效率 +1" +
+        "</div></div>";
+      return d;
+    })());
+    scrollBottom();
+    return Promise.resolve();
+  }
+  function cmdLs(args) {
+    if (args.indexOf("-a") !== -1) {
+      return printLines([
+        ".  ..  <span class='dim'>.secrets</span>  about.md  now.log  projects/  skills.txt"
+      ], 20).then(function () {
+        return printLines(["<span class='dim'>(有个 .secrets 被 ls -a 照出来了…… cat 试试?)</span>"], 20);
       });
     }
+    if (args[0] === "projects" || args.indexOf("projects/") !== -1) {
+      return printLines([
+        "<span class='cyan'>projects/</span>",
+        "  ★ slpm.md       <span class='dim'>液态毛玻璃 · 智能任务与项目管理(公开)</span>",
+        "  🔒 network.md   <span class='dim'>GoBGP 控制台 + NetFlow 生成器</span>",
+        "  🔒 health.md    <span class='dim'>iOS/watchOS 压力管理 App</span>",
+        "  🔒 home.md      <span class='dim'>家庭服务器网站</span>",
+        "  archive/",
+        "    pos.md       <span class='dim'>stationery-pos 收银系统(公开)</span>"
+      ], 16);
+    }
+    return printLines(["about.md  now.log  projects/  skills.txt"], 20);
   }
-  function step() {
-    var w = window.innerWidth, h = window.innerHeight;
-    ctx.clearRect(0, 0, w, h);
-    for (var i = 0; i < particles.length; i++) {
-      var p = particles[i];
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0 || p.x > w) p.vx *= -1;
-      if (p.y < 0 || p.y > h) p.vy *= -1;
-      /* 鼠标轻微吸引 */
-      if (mouse.x !== null) {
-        var dx = mouse.x - p.x, dy = mouse.y - p.y, d = Math.sqrt(dx * dx + dy * dy);
-        if (d < 160 && d > 0.01) { p.x += dx / d * .35; p.y += dy / d * .35; }
-      }
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(148, 163, 220, .55)";
-      ctx.fill();
-      for (var j = i + 1; j < particles.length; j++) {
-        var q = particles[j];
-        var ddx = p.x - q.x, ddy = p.y - q.y, dd = ddx * ddx + ddy * ddy;
-        if (dd < 120 * 120) {
-          var a = (1 - Math.sqrt(dd) / 120) * .18;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
-          ctx.strokeStyle = "rgba(129, 140, 248, " + a + ")";
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
+  function cmdCat(args) {
+    var f = (args[0] || "").replace(/^\.\//, "");
+    if (f === "about.md") return cmdAbout();
+    if (f === "now.log") return cmdNow();
+    if (f === "skills.txt") return cmdSkills();
+    if (f === ".secrets") {
+      return printLines([
+        "<span class='amber'>📢 彩蛋被你发现了。</span>",
+        "奖励你一个事实:这个页面没有用任何框架、没有构建工具,",
+        "就是一个手写的 index.html —— 和我做的所有项目一样,<span class='amber'>小而完整</span>。"
+      ], 25);
+    }
+    var m = f.match(/^projects\/(.+\.md)$/);
+    if (m) {
+      var key = m[1] === "pos.md" ? "pos" : m[1].replace(/\.md$/, "");
+      var p = PROJECTS[key];
+      if (p) {
+        return printLines(["<span class='cyan'>── " + p.title + " ──</span>"].concat(
+          p.desc.map(function (d) {
+            return d.replace(/(https:\/\/[^\s]+)/, "<a class='lnk' href='$1' target='_blank' rel='noopener'>$1</a>");
+          })
+        ), 16);
       }
     }
-    rafId = requestAnimationFrame(step);
+    return printLines(["cat: " + (f || "?") + ": 没有那个文件或目录", "<span class='dim'>试试: ls</span>"], 20);
   }
-  if (!reduced) {
-    window.addEventListener("resize", resize);
-    window.addEventListener("mousemove", function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
-    window.addEventListener("mouseout", function () { mouse.x = null; mouse.y = null; });
-    document.addEventListener("visibilitychange", function () {
-      if (document.hidden) { cancelAnimationFrame(rafId); rafId = null; }
-      else if (!rafId) { rafId = requestAnimationFrame(step); }
-    });
-    resize();
-    rafId = requestAnimationFrame(step);
-  }
-
-  /* ---------- 打字机 ---------- */
-  var phrases = ["网络流量方向的全栈工程师。", "Swift、TypeScript、Java、Python 都写。", "AI Agent 探索者。", "把生活也做成软件的人。", "文档写得比代码还认真。"];
-  var el = document.getElementById("typed"), pi = 0, ci = 0, deleting = false;
-  function tick() {
-    var phrase = phrases[pi];
-    el.textContent = phrase.slice(0, ci);
-    var delay;
-    if (!deleting) {
-      ci++;
-      delay = 90;
-      if (ci > phrase.length) { deleting = true; delay = 1600; }
-    } else {
-      ci--;
-      delay = 38;
-      if (ci < 0) { deleting = false; ci = 0; pi = (pi + 1) % phrases.length; delay = 350; }
+  function cmdPing() {
+    var lines = [
+      "PING schearloe.github.io (185.199.108.153): 56 data bytes"
+    ];
+    for (var i = 0; i < 4; i++) {
+      lines.push("64 bytes from 185.199.108.153: icmp_seq=" + i + " ttl=56 time=" + (38 + Math.floor(Math.random() * 14)) + "." + Math.floor(Math.random() * 9) + " ms");
     }
-    setTimeout(tick, delay);
+    lines.push("", "--- 4 packets transmitted, 0 packet loss ---",
+      "<span class='dim'>心跳正常。欢迎常来。</span>");
+    return printLines(lines, 160);
   }
-  if (!reduced) { tick(); } else { el.textContent = phrases[0]; }
+  function cmdBgp() {
+    return printLines([
+      "<span class='cyan'>show bgp summary</span>  <span class='dim'>(模拟输出 — 真实的在家里那台机器上)</span>",
+      "",
+      "Neighbor      AS      State/PfxRcd    Uptime",
+      "upstream-163  4134    Estab/128       08w3d",
+      "ix-peer       9808    Estab/96        12w1d",
+      "ddos-scrub    65002   Estab/7         42d",
+      "",
+      "<span class='dim'>真实工作里我维护这类系统的 Web 控制台 → cat projects/network.md</span>"
+    ], 24);
+  }
+  function cmdSudo() {
+    return printLines([
+      "<span class='red'>guest is not in the sudoers file.</span> This incident will be reported.",
+      "<span class='dim'>(并不会。但你的好奇心已记录在案 😏)</span>"
+    ], 25);
+  }
+  function cmdRm(args) {
+    return printLines([
+      "<span class='red'>nice try.</span> 文件系统是只读的 —— 正如我对代码质量的坚持。"
+    ], 25);
+  }
+  function cmdCowsay(args) {
+    var msg = args.join(" ") || "你好,访客! 试试 help";
+    var bar = "-".repeat(msg.length + 2);
+    return printLines([
+      " " + bar,
+      "&lt; " + msg + " &gt;",
+      " " + bar,
+      "        \\   ^__^",
+      "         \\  (oo)\\_______",
+      "            (__)\\       )\\/\\",
+      "                ||----w |",
+      "                ||     ||"
+    ], 20);
+  }
+  function cmdExit() {
+    return printLines([
+      "logout",
+      "Connection to schearloe.github.io closed.",
+      "<span class='dim'>……开玩笑的,刷新页面就能重新连上 :)</span>"
+    ], 60);
+  }
+  function cmdTheme() {
+    theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+    applyTheme();
+    return printLines(["theme → <span class='ok'>" + theme + "</span>"], 20);
+  }
+  function cmdDate() { return printLines([new Date().toString()], 20); }
+  function cmdEcho(args) { return printLines([args.join(" ") || ""], 20); }
+  function cmdHistory() {
+    return printLines(history.map(function (h, i) { return "  " + (i + 1) + "  " + h; }), 12);
+  }
+  function cmdCoffee() {
+    return printLines([
+      "☕ brewing...",
+      "<span class='amber'>☕ 好了。写码 fuel +1。</span>"
+    ], 400);
+  }
+  function cmdClear() {
+    screenEl.innerHTML = "";
+    return Promise.resolve();
+  }
 
-  /* ---------- 滚动浮现 ---------- */
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (en.isIntersecting) { en.target.classList.add("visible"); io.unobserve(en.target); }
-    });
-  }, { threshold: .12 });
-  document.querySelectorAll(".reveal").forEach(function (n, i) {
-    n.style.transitionDelay = (i % 3) * 90 + "ms";
-    io.observe(n);
+  var COMMANDS = {
+    help: cmdHelp, whoami: cmdWhoami, about: cmdAbout, skills: cmdSkills,
+    now: cmdNow, contact: cmdContact, neofetch: cmdNeofetch, theme: cmdTheme,
+    date: cmdDate, echo: cmdEcho, history: cmdHistory, coffee: cmdCoffee,
+    sudo: cmdSudo, cowsay: cmdCowsay, exit: cmdExit, logout: cmdExit,
+    clear: cmdClear, ping: cmdPing, bgp: cmdBgp, rm: cmdRm,
+    ls: cmdLs, cat: cmdCat, github: cmdContact, projects: function () { return cmdLs(["projects"]); }
+  };
+
+  function runCommand(raw) {
+    removePrompt();
+    makeLine(promptHTML() + '<span class="w"></span>').querySelector(".w").textContent = raw;
+    var input = raw.trim();
+    if (!input) { showPrompt(); scrollBottom(); return; }
+    history.push(input); histIdx = history.length;
+
+    var parts = input.split(/\s+/);
+    var cmd = parts[0].toLowerCase();
+    var args = parts.slice(1);
+    var fn = COMMANDS[cmd];
+    if (fn) { fn(args).then(function () { showPrompt(); scrollBottom(); }); }
+    else {
+      printLines([
+        "zsh: command not found: " + cmd,
+        "<span class='dim'>试试 <span class='ok'>help</span> —— 或者,有些命令没写在帮助里。</span>"
+      ], 20).then(function () { showPrompt(); scrollBottom(); });
+    }
+  }
+
+  /* ================= 输入 ================= */
+  var pendingSubmit = false;
+  kbd.addEventListener("input", function () {
+    if (!mirror) return;
+    mirror.textContent = kbd.value;
+    scrollBottom();
   });
-
-  /* ---------- 卡片 3D 倾斜 + 光斑跟随 ---------- */
-  document.querySelectorAll(".project").forEach(function (card) {
-    card.addEventListener("mousemove", function (e) {
-      var r = card.getBoundingClientRect();
-      var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
-      card.style.setProperty("--mx", px * 100 + "%");
-      card.style.setProperty("--my", py * 100 + "%");
-      if (!reduced) {
-        card.style.transform = "perspective(800px) rotateX(" + ((.5 - py) * 5) + "deg) rotateY(" + ((px - .5) * 5) + "deg) translateY(-4px)";
-      }
-    });
-    card.addEventListener("mouseleave", function () { card.style.transform = ""; });
+  kbd.addEventListener("keydown", function (e) {
+    if (!inputRow) {
+      if (e.key === "Enter") pendingSubmit = true;
+      e.preventDefault();
+      return;
+    }
+    if (e.key === "Enter") {
+      var v = kbd.value; kbd.value = ""; mirror.textContent = "";
+      runCommand(v);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (histIdx > 0) { histIdx--; kbd.value = history[histIdx] || ""; mirror.textContent = kbd.value; }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (histIdx < history.length) { histIdx++; kbd.value = history[histIdx] || ""; mirror.textContent = kbd.value; }
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      var v = kbd.value;
+      var pool = v.startsWith("cat ") ? PROJECT_FILES.map(function (f) { return "cat projects/" + f; }) : Object.keys(COMMANDS);
+      var hit = pool.filter(function (c) { return c.indexOf(v) === 0; });
+      if (hit.length === 1) { kbd.value = hit[0] + " "; mirror.textContent = kbd.value; }
+      else if (hit.length > 1) { runCommand(v + ""); kbd.value = v; }
+    } else if (e.key === "l" && e.ctrlKey) {
+      e.preventDefault(); cmdClear().then(showPrompt);
+    }
   });
+  screenEl.addEventListener("mouseup", function () { kbd.focus({ preventScroll: true }); });
 
-  /* ---------- 顶部进度条 ---------- */
-  var bar = document.getElementById("progressBar");
-  window.addEventListener("scroll", function () {
-    var max = document.documentElement.scrollHeight - window.innerHeight;
-    bar.style.width = (max > 0 ? window.scrollY / max * 100 : 0) + "%";
-  }, { passive: true });
+  /* ================= 开机动画 ================= */
+  var bootSkipped = false;
+  function skipBoot() { bootSkipped = true; }
+  document.addEventListener("keydown", skipBoot, { once: true });
+  screenEl.addEventListener("click", skipBoot, { once: true });
+
+  var BOOT = [
+    { text: "connecting to schearloe.github.io ...", cls: "dim", hold: 140 },
+    { html: "<span class='ok'>✔ connected</span> <span class='dim'>· TLS 1.3</span>", hold: 110 },
+    { text: "login as: guest", hold: 90 },
+    { html: "<span class='ok'>[ OK ]</span> personality: <span class='cyan'>网络流量 × 全栈 × AI Agent</span>", hold: 130 },
+    { html: "<span class='ok'>[ OK ]</span> mounted /projects (5 entries, 3 classified)", hold: 130 },
+    { html: "<span class='ok'>[ OK ]</span> easter egg daemon started", hold: 240 }
+  ];
+
+  var isCoarse = window.matchMedia("(pointer: coarse)").matches;
+  typeLines(BOOT, 70, 16).then(function () {
+    return printLines(bannerHTML(), 40);
+  }).then(function () {
+    if (!reduced) {
+      return typeLines([
+        { text: "这不是普通的网页 —— 是一台你可以操作的机器。", cls: "w", hold: 120 },
+        { text: "输入 help 查看命令;乱敲也可能有惊喜。", cls: "dim", hold: 100 },
+        { html: " ", hold: 40 }
+      ], 50, 20);
+    }
+    return printLines(["这不是普通的网页 —— 是一台你可以操作的机器。", "输入 help 查看命令;乱敲也可能有惊喜。", ""], 30);
+  }).then(function () {
+    showPrompt();
+    scrollBottom();
+    if (!isCoarse) kbd.focus({ preventScroll: true });
+    /* 重挂跳过监听(上面 once 已消耗) */
+  });
 })();
 </script>
 </body>
