@@ -1,57 +1,435 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SchearLoe 的个人主页 — 全栈开发者，从桌面端到云端。">
+<title>SchearLoe · 个人主页</title>
+<link rel="icon" type="image/jpeg" href="avatar.png">
+<style>
+  :root {
+    --bg: #05070d;
+    --bg-soft: #0a0e1a;
+    --text: #e8ebf5;
+    --text-dim: #9aa3b8;
+    --accent-1: #6366f1;
+    --accent-2: #a855f7;
+    --accent-3: #22d3ee;
+    --glass: rgba(255, 255, 255, .04);
+    --glass-border: rgba(255, 255, 255, .09);
+    --grad: linear-gradient(120deg, var(--accent-1), var(--accent-2) 50%, var(--accent-3));
+    --mono: ui-monospace, "JetBrains Mono", Consolas, "Courier New", monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+  ::selection { background: rgba(99, 102, 241, .45); color: #fff; }
 
-	<head>
-		<meta charset="utf-8" />
-		<title>密码是我爱你</title>
-		<!--引入bootstrap-->
-		<!-- 新 Bootstrap 核心 CSS 文件 -->
-		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css"> 
-		<!-- 可选的Bootstrap主题文件（一般不用引入） --> 
-		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap-theme.min.css"> 
-		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 --> 
-		<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script> 
-		<!-- 最新的 Bootstrap 核心 JavaScript 文件 --> 
-		<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<link rel="shortcut icon" href="img/x-icon.ico" type="image/x-icon">
-	</head>
-	<div class="container">
-		<div class="row clearfix">
-			<div class="col-md-4 column">
-			</div>
-			<div class="col-md-4 column">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h3 class="panel-title">曦妹粉丝登录</h3>
-					</div>
-					<div class="panel-body">
-						<form role="form" action="show.html">
-							<div class="form-group">
-								<label>用户名</label><input type="email" class="form-control" name="username" />
-							</div>
-							<div class="form-group">
-								<label>密码</label><input type="password" class="form-control" name="password" />
-							</div>
-							<div align="center"><button type="submit" class="btn btn-default">&nbsp;登&nbsp;录&nbsp;</button></div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-4 column">
-			</div>
-		</div>
-	</div>
-	<!--底部信息-->
-	<div class="bottom " style="text-align: center; ">
-		<div style="clear: both; "></div>
-		<div class="bottom-content ">
-			<p>Copyright © 2017-2018
-				<a target="_blank " class="ui-padding " href="http://www.henu.edu.cn/ ">
-					河南大学金明校区</a> 豫ICP备xxxxxxx号-0
-			</p>
-		</div>
-	</div>
-	</body>
+  /* ---------- 背景：粒子 + 极光 ---------- */
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .35; will-change: transform; }
+  .blob-1 { width: 55vmax; height: 55vmax; top: -25vmax; left: -15vmax; background: radial-gradient(circle, #4338ca 0%, transparent 65%); animation: drift1 26s ease-in-out infinite alternate; }
+  .blob-2 { width: 45vmax; height: 45vmax; bottom: -20vmax; right: -10vmax; background: radial-gradient(circle, #7e22ce 0%, transparent 65%); animation: drift2 32s ease-in-out infinite alternate; }
+  .blob-3 { width: 35vmax; height: 35vmax; top: 35%; left: 55%; background: radial-gradient(circle, #0e7490 0%, transparent 65%); animation: drift3 24s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(12vmax, 8vmax) scale(1.15); } }
+  @keyframes drift2 { to { transform: translate(-10vmax, -12vmax) scale(1.1); } }
+  @keyframes drift3 { to { transform: translate(-14vmax, 10vmax) scale(1.2); } }
 
+  /* ---------- 顶部滚动进度条 ---------- */
+  .progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 99; background: transparent; }
+  .progress-bar { height: 100%; width: 0; background: var(--grad); box-shadow: 0 0 10px rgba(168, 85, 247, .8); }
+
+  /* ---------- 导航 ---------- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 5vw; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: rgba(5, 7, 13, .55); border-bottom: 1px solid rgba(255, 255, 255, .06);
+  }
+  .logo { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; text-decoration: none; background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-links { display: flex; gap: 26px; }
+  .nav-links a { color: var(--text-dim); text-decoration: none; font-size: .92rem; transition: color .25s; position: relative; }
+  .nav-links a::after { content: ""; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px; background: var(--grad); transition: width .3s; border-radius: 2px; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; z-index: 1; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 0 20px;
+  }
+  .avatar-wrap { position: relative; width: 148px; height: 148px; margin-bottom: 30px; }
+  .avatar-wrap::before {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%; background: var(--grad);
+    animation: spin 5s linear infinite; z-index: 0;
+  }
+  .avatar-wrap::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; background: var(--grad); filter: blur(22px); opacity: .55; z-index: -1; }
+  .avatar { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 5px solid var(--bg); animation: spin 5s linear infinite reverse; z-index: 1; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hello { font-family: var(--mono); color: var(--accent-3); letter-spacing: .25em; font-size: .85rem; margin-bottom: 14px; }
+  h1.name {
+    font-size: clamp(2.8rem, 8vw, 5.2rem); font-weight: 800; letter-spacing: .02em;
+    background: linear-gradient(120deg, #fff 30%, #b9c0ff 60%, #d8b4fe);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .typing-line { margin-top: 18px; font-size: clamp(1.05rem, 2.6vw, 1.5rem); color: var(--text-dim); min-height: 2.2em; }
+  .typed { color: var(--text); }
+  .cursor { display: inline-block; width: 2px; height: 1.15em; background: var(--accent-2); vertical-align: -0.2em; margin-left: 3px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 34px; }
+  .badge {
+    font-family: var(--mono); font-size: .8rem; padding: 7px 16px; border-radius: 999px;
+    border: 1px solid var(--glass-border); background: var(--glass); color: var(--text-dim);
+    transition: transform .25s, border-color .25s, color .25s;
+  }
+  .badge:hover { transform: translateY(-3px); border-color: rgba(168, 85, 247, .6); color: var(--text); }
+
+  .hero-cta { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    text-decoration: none; font-size: .95rem; padding: 13px 30px; border-radius: 12px; font-weight: 600;
+    transition: transform .25s, box-shadow .25s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 4px 24px rgba(139, 92, 246, .35); }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(139, 92, 246, .55); }
+  .btn-ghost { border: 1px solid var(--glass-border); color: var(--text); background: var(--glass); }
+  .btn-ghost:hover { transform: translateY(-3px); border-color: rgba(34, 211, 238, .5); }
+
+  .scroll-hint { position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%); color: var(--text-dim); font-size: .78rem; letter-spacing: .2em; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .scroll-hint .mouse { width: 22px; height: 36px; border: 1.5px solid var(--text-dim); border-radius: 12px; position: relative; }
+  .scroll-hint .mouse::after { content: ""; position: absolute; top: 7px; left: 50%; width: 3px; height: 7px; margin-left: -1.5px; border-radius: 3px; background: var(--accent-3); animation: wheel 1.6s ease-in-out infinite; }
+  @keyframes wheel { 0% { opacity: 1; transform: translateY(0); } 70% { opacity: 0; transform: translateY(10px); } 100% { opacity: 0; } }
+
+  /* ---------- 区块 ---------- */
+  main { position: relative; z-index: 1; }
+  section { max-width: 1080px; margin: 0 auto; padding: 90px 24px 30px; }
+  .section-tag { font-family: var(--mono); color: var(--accent-3); font-size: .82rem; letter-spacing: .25em; margin-bottom: 10px; }
+  h2.section-title { font-size: clamp(1.7rem, 4.5vw, 2.4rem); font-weight: 800; margin-bottom: 34px; }
+  h2.section-title .hl { background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+  .about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; }
+  @media (max-width: 760px) { .about-grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px;
+    padding: 28px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  .about-text p { color: var(--text-dim); margin-bottom: 14px; }
+  .about-text strong { color: var(--text); font-weight: 600; }
+
+  .skill-group + .skill-group { margin-top: 18px; }
+  .skill-label { font-family: var(--mono); font-size: .78rem; color: var(--accent-3); letter-spacing: .12em; margin-bottom: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-size: .82rem; padding: 5px 13px; border-radius: 8px; color: var(--text-dim);
+    background: rgba(255, 255, 255, .05); border: 1px solid transparent; transition: all .25s;
+  }
+  .chip:hover { color: var(--text); border-color: rgba(99, 102, 241, .55); background: rgba(99, 102, 241, .12); transform: translateY(-2px); }
+
+  /* ---------- 项目卡片 ---------- */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .project {
+    position: relative; border-radius: 18px; overflow: hidden;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    padding: 28px; text-decoration: none; color: var(--text); display: block;
+    transform-style: preserve-3d; will-change: transform;
+    transition: border-color .3s, box-shadow .3s;
+  }
+  .project::before {
+    content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .35s; pointer-events: none;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(139, 92, 246, .16), transparent 65%);
+  }
+  .project:hover::before { opacity: 1; }
+  .project:hover { border-color: rgba(168, 85, 247, .45); box-shadow: 0 14px 44px rgba(99, 102, 241, .18); }
+  .project .icon { font-size: 1.9rem; margin-bottom: 14px; display: block; }
+  .project h3 { font-size: 1.18rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .project h3 .arrow { opacity: 0; transform: translateX(-6px); transition: all .3s; font-size: 1rem; }
+  .project:hover h3 .arrow { opacity: 1; transform: translateX(0); }
+  .project p { color: var(--text-dim); font-size: .9rem; margin-bottom: 18px; }
+  .tech-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .tech { font-family: var(--mono); font-size: .72rem; padding: 3px 10px; border-radius: 6px; color: var(--accent-3); background: rgba(34, 211, 238, .08); border: 1px solid rgba(34, 211, 238, .18); }
+
+  /* ---------- 页脚 ---------- */
+  footer {
+    position: relative; z-index: 1; text-align: center; padding: 60px 20px 40px; color: var(--text-dim); font-size: .85rem;
+  }
+  footer .links { display: flex; justify-content: center; gap: 22px; margin-bottom: 18px; }
+  footer a { color: var(--text-dim); text-decoration: none; transition: color .25s; display: inline-flex; align-items: center; gap: 6px; }
+  footer a:hover { color: var(--text); }
+  footer .heart { color: #f472b6; display: inline-block; animation: beat 1.2s ease-in-out infinite; }
+  @keyframes beat { 0%, 100% { transform: scale(1); } 25% { transform: scale(1.25); } }
+
+  /* ---------- 滚动浮现 ---------- */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2, .65, .3, 1), transform .8s cubic-bezier(.2, .65, .3, 1); }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    section { padding: 70px 18px 20px; }
+  }
+  @media (max-height: 780px) { .scroll-hint { display: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="aurora" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+<nav>
+  <a class="logo" href="#">SchearLoe</a>
+  <div class="nav-links">
+    <a href="#about">关于</a>
+    <a href="#projects">项目</a>
+    <a href="https://github.com/SchearLoe" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="avatar-wrap">
+    <img class="avatar" src="avatar.png" alt="SchearLoe 的头像">
+  </div>
+  <div class="hello">HELLO, WORLD 👋</div>
+  <h1 class="name">SchearLoe</h1>
+  <div class="typing-line">我是 <span class="typed" id="typed"></span><span class="cursor"></span></div>
+  <div class="hero-badges">
+    <span class="badge">⌨️ TypeScript 全栈</span>
+    <span class="badge">🖥️ 桌面端 × 云端</span>
+    <span class="badge">🧩 爱造轮子</span>
+    <span class="badge">🌙 深夜写代码型选手</span>
+  </div>
+  <div class="hero-cta">
+    <a class="btn btn-primary" href="#projects">看看我的项目 →</a>
+    <a class="btn btn-ghost" href="https://github.com/SchearLoe" target="_blank" rel="noopener">
+      <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+  </div>
+  <div class="scroll-hint"><div class="mouse"></div>SCROLL</div>
+</header>
+
+<main>
+  <section id="about">
+    <div class="reveal">
+      <div class="section-tag">// ABOUT ME</div>
+      <h2 class="section-title">关于<span class="hl">我</span></h2>
+    </div>
+    <div class="about-grid">
+      <div class="card about-text reveal">
+        <p><strong>你好，我是 SchearLoe。</strong>一名喜欢把想法做成完整产品的全栈开发者，从 Electron 桌面端到 NestJS 云端服务，从前端交互到数据库设计都乐在其中。</p>
+        <p>最近在写一个<strong>文具店收银系统（POS）</strong>和一个<strong>液态毛玻璃风格的任务管理工具</strong>；也在折腾 GoBGP 控制台这类"不太一样"的东西。</p>
+        <p>我相信好看的界面和可靠的工程可以兼得——<strong>代码要能跑，界面要能打。</strong></p>
+      </div>
+      <div class="card reveal">
+        <div class="skill-group">
+          <div class="skill-label">FRONTEND</div>
+          <div class="chips">
+            <span class="chip">Vue 3</span><span class="chip">Electron</span><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Vite</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-label">BACKEND</div>
+          <div class="chips">
+            <span class="chip">NestJS</span><span class="chip">Node.js</span><span class="chip">Java</span><span class="chip">PostgreSQL</span><span class="chip">Prisma</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-label">TOOLS</div>
+          <div class="chips">
+            <span class="chip">Playwright</span><span class="chip">pnpm</span><span class="chip">Git</span><span class="chip">Docker</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="reveal">
+      <div class="section-tag">// PROJECTS</div>
+      <h2 class="section-title">精选<span class="hl">项目</span></h2>
+    </div>
+    <div class="projects-grid">
+      <a class="project reveal" href="https://github.com/SchearLoe/stationery-pos" target="_blank" rel="noopener">
+        <span class="icon">🧾</span>
+        <h3>stationery-pos <span class="arrow">→</span></h3>
+        <p>小型文具店收银系统（POS）：Electron + Vue3 桌面收银端，NestJS + PostgreSQL 云端。进销存、交接班、经营报表、采购应付、会员储值积分、账目月结，一应俱全。</p>
+        <div class="tech-row">
+          <span class="tech">Electron</span><span class="tech">Vue 3</span><span class="tech">NestJS</span><span class="tech">PostgreSQL</span><span class="tech">Prisma</span>
+        </div>
+      </a>
+      <a class="project reveal" href="https://github.com/SchearLoe/slpm" target="_blank" rel="noopener">
+        <span class="icon">🫧</span>
+        <h3>slpm <span class="arrow">→</span></h3>
+        <p>液态毛玻璃风格 · 智能任务与项目管理。周期性日程、动效细节、任务流转，把"待办清单"做成一件赏心悦目的工具。</p>
+        <div class="tech-row">
+          <span class="tech">Vue 3</span><span class="tech">TypeScript</span><span class="tech">Playwright E2E</span>
+        </div>
+      </a>
+      <a class="project reveal" href="https://github.com/SchearLoe" target="_blank" rel="noopener">
+        <span class="icon">🚀</span>
+        <h3>更多在造的东西 <span class="arrow">→</span></h3>
+        <p>健康管理系统、浏览器首页面板、一些自动化与实验性小玩具……仓库还在持续增加中，欢迎来 GitHub 逛逛。</p>
+        <div class="tech-row">
+          <span class="tech">GitHub</span><span class="tech">WIP</span><span class="tech">WIP</span><span class="tech">WIP</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="links">
+    <a href="https://github.com/SchearLoe" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a href="https://schearloe.github.io">schearloe.github.io</a>
+  </div>
+  <div>© 2026 SchearLoe · Made with <span class="heart">❤</span> and vanilla JS</div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- 粒子网络背景 ---------- */
+  var canvas = document.getElementById("particles");
+  var ctx = canvas.getContext("2d");
+  var particles = [], mouse = { x: null, y: null }, rafId = null;
+
+  function resize() {
+    canvas.width = window.innerWidth * devicePixelRatio;
+    canvas.height = window.innerHeight * devicePixelRatio;
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    init();
+  }
+  function init() {
+    var w = window.innerWidth, h = window.innerHeight;
+    var count = Math.min(110, Math.floor(w * h / 16000));
+    particles = [];
+    for (var i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - .5) * .45, vy: (Math.random() - .5) * .45,
+        r: Math.random() * 1.6 + .6
+      });
+    }
+  }
+  function step() {
+    var w = window.innerWidth, h = window.innerHeight;
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+      /* 鼠标轻微吸引 */
+      if (mouse.x !== null) {
+        var dx = mouse.x - p.x, dy = mouse.y - p.y, d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 160 && d > 0.01) { p.x += dx / d * .35; p.y += dy / d * .35; }
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(148, 163, 220, .55)";
+      ctx.fill();
+      for (var j = i + 1; j < particles.length; j++) {
+        var q = particles[j];
+        var ddx = p.x - q.x, ddy = p.y - q.y, dd = ddx * ddx + ddy * ddy;
+        if (dd < 120 * 120) {
+          var a = (1 - Math.sqrt(dd) / 120) * .18;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = "rgba(129, 140, 248, " + a + ")";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+    rafId = requestAnimationFrame(step);
+  }
+  if (!reduced) {
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+    window.addEventListener("mouseout", function () { mouse.x = null; mouse.y = null; });
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) { cancelAnimationFrame(rafId); rafId = null; }
+      else if (!rafId) { rafId = requestAnimationFrame(step); }
+    });
+    resize();
+    rafId = requestAnimationFrame(step);
+  }
+
+  /* ---------- 打字机 ---------- */
+  var phrases = ["全栈开发者。", "TypeScript 爱好者。", "把想法做成完整产品的人。", "从桌面端写到云端。", "永远在造新东西。"];
+  var el = document.getElementById("typed"), pi = 0, ci = 0, deleting = false;
+  function tick() {
+    var phrase = phrases[pi];
+    el.textContent = phrase.slice(0, ci);
+    var delay;
+    if (!deleting) {
+      ci++;
+      delay = 90;
+      if (ci > phrase.length) { deleting = true; delay = 1600; }
+    } else {
+      ci--;
+      delay = 38;
+      if (ci < 0) { deleting = false; ci = 0; pi = (pi + 1) % phrases.length; delay = 350; }
+    }
+    setTimeout(tick, delay);
+  }
+  if (!reduced) { tick(); } else { el.textContent = phrases[0]; }
+
+  /* ---------- 滚动浮现 ---------- */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add("visible"); io.unobserve(en.target); }
+    });
+  }, { threshold: .12 });
+  document.querySelectorAll(".reveal").forEach(function (n, i) {
+    n.style.transitionDelay = (i % 3) * 90 + "ms";
+    io.observe(n);
+  });
+
+  /* ---------- 卡片 3D 倾斜 + 光斑跟随 ---------- */
+  document.querySelectorAll(".project").forEach(function (card) {
+    card.addEventListener("mousemove", function (e) {
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+      card.style.setProperty("--mx", px * 100 + "%");
+      card.style.setProperty("--my", py * 100 + "%");
+      if (!reduced) {
+        card.style.transform = "perspective(800px) rotateX(" + ((.5 - py) * 5) + "deg) rotateY(" + ((px - .5) * 5) + "deg) translateY(-4px)";
+      }
+    });
+    card.addEventListener("mouseleave", function () { card.style.transform = ""; });
+  });
+
+  /* ---------- 顶部进度条 ---------- */
+  var bar = document.getElementById("progressBar");
+  window.addEventListener("scroll", function () {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (max > 0 ? window.scrollY / max * 100 : 0) + "%";
+  }, { passive: true });
+})();
+</script>
+</body>
 </html>
